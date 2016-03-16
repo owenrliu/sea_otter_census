@@ -1,0 +1,270 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+<title>Range_extent_09</title>
+<meta name="generator" content="dfg_imaps.xsl">
+<meta name="author" content="Eric G. Miller">
+<meta name="copyright" content="2004, California Department of Fish and Game">
+<meta name="about" content="Look and Feel adapted from ESRI stylesheets.">
+<style type="text/css">
+body {padding: 0px; margin: 0.25in; font-size: 10pt; 
+    background-color: #F0F2E8; font-family: Verdana,sans-serif;}
+
+h1 { font-family: Verdana,sans-serif;}
+
+img { border: solid 1px #CBDAB4; margin: 5px; }
+
+#heading {font-size: 18px; text-align: center; color: #006400;}
+#subheading {font-size: 13px; text-align: center; color: #006400;}
+
+.label {font-weight: bold; font-size: 13px; 
+   font-family: Verdana,sans-serif; color: #5F6C4B;}
+
+.lworkcit {display: block; border-left: dashed 1px #cfcfcf;
+    font-size: small; padding-left: 1em;}
+
+.indent {margin-left: 20px; color: #000000;}
+
+.hideShow {color: #417688; font-weight: bold;}
+
+.hideShow:hover {color: #3AC5F2; font-weight: bold;}
+
+table#tabChoose {background-color: #5F6C4B;}
+table#tabChoose td {text-align: center; font-weight: bold; font-size: 13px; 
+    font-family: Verdana, sans-serif; padding: 5px;}
+.tabActive { background-color: #5F6C4B;}
+.tabActive a {color: #FFFFFF;}
+.tabInactive {background-color: #CBDAB4;}
+.tabInactive a {color: #5F6C4B;}
+
+#box {border: solid 2px #5F6C4B; margin: 0px; padding: 10px; background-color: #ffffff;}
+#Description {display: block;}
+#Spatial {display: none;}
+#Attributes {display: none;}
+
+hr { background-color: #000000; border-style: none; 
+    height: 1px; border-color: #000000; width: 150px; text-align: center; }
+
+table.domain {
+     border: solid 1px #cfcfcf;
+}
+
+table.domain thead {
+     background-color: #CBDAB4;
+     color: #5F6C4B;
+     font-weight: bold;
+}
+
+table.domain th,td {
+     padding: 2px 4px 2px 4px;
+}
+
+.seclabel { font-size: 15px; font-family: Verdana, sans-serif; 
+    text-align: center; margin: 1em; color: #5F6C4B;}
+
+</style><script type="text/javascript">
+
+var elements = {};
+
+function init() {
+   // populate our elements object
+   elements.Description = document.getElementById("Description");
+   elements.DescriptionTab = document.getElementById("DescriptionTab");
+   elements.Spatial = document.getElementById("Spatial");
+   elements.SpatialTab = document.getElementById("SpatialTab");
+   elements.Attributes = document.getElementById("Attributes");
+   elements.AttributesTab = document.getElementById("AttributesTab");
+   elements.pair = [
+                    {div:elements.Description, tab:elements.DescriptionTab},
+		    {div:elements.Spatial, tab:elements.SpatialTab},
+		    {div:elements.Attributes, tab:elements.AttributesTab}
+		    ];
+   elements.divChoose = document.getElementById("divChoose");
+   elements.tabChoose = document.getElementById("tabChoose");
+   return true;
+}
+
+function showAll() {
+   var divs = document.getElementsByTagName("DIV");
+   for (var i = 0; i < divs.length; i++) {
+      divs[i].style.display = "block";
+   }
+   elements.divChoose.style.display = 'none';
+   toggleSectionLabels(true);
+   return false;
+}
+
+function showTabs() {
+   // Collapse all divs beneath anchors with className = 'hideShow'
+   var anchors = document.getElementsByTagName("A");
+   for (var i = 0; i < anchors.length; i++) {
+      if (anchors[i].className == 'hideShow') {
+         var d = anchors[i].parentNode.getElementsByTagName("DIV")[0];
+	 if (d) { d.style.display = 'none'; }
+      }
+   }
+
+   // hide Spatial && Attributes divs, show Description
+   elements.Spatial.style.display = 'none';
+   elements.Attributes.style.display = 'none';
+   elements.Description.style.display = 'block';
+
+   // Hide section labels
+   toggleSectionLabels(false);
+
+   elements.divChoose.style.display = 'block';
+
+   elements.DescriptionTab.className = 'tabActive';
+   elements.AttributesTab.className = 'tabInactive';
+   elements.SpatialTab.className = 'tabInactive';
+   return false;
+}
+
+function toggleSectionLabels(on) {
+   var h2 = document.getElementsByTagName("H2");
+   for (var i = 0; i < h2.length; i++) {
+      if (h2[i].className == 'seclabel') {
+         h2[i].style.display = (on) ? 'block' : 'none';
+      }
+   }
+}
+
+function hideShow(e) {
+   var p = e.parentNode;
+   var d = p.getElementsByTagName("DIV")[0];
+   if (d) {
+     if (d.style.display == "none") {d.style.display = "block";}
+     else {d.style.display = "none";}
+   }
+   return false;
+}
+
+function changeTab(a) {
+   var td = a.parentNode;
+   for (var i = 0; i < elements.pair.length; i++) {
+      if (td == elements.pair[i].tab) {
+         elements.pair[i].tab.className = 'tabActive';
+	 elements.pair[i].div.style.display = 'block';
+      }
+      else {
+         elements.pair[i].tab.className = 'tabInactive';
+         elements.pair[i].div.style.display = 'none';
+      }
+   }
+   return false;
+}
+
+</script></head>
+<body onload="init()">
+<h1 id="heading">Range_extent_09</h1>
+<p id="actionLinks"><a class="label" href="#" onclick="return showAll();" title="Show all sections for printing">Show All</a> | <a class="label" href="#" onclick="return showTabs();" title="Collapse all sections and show tabs">Show Tabs</a></p>
+<div id="divChoose">
+<table id="tabChoose" border="0" cellspacing="1" cellpadding="0">
+<colgroup span="3" width="105"></colgroup>
+<tr>
+<td id="DescriptionTab" class="tabActive"><a href="#" onclick="return changeTab(this);">Description</a></td>
+<td id="SpatialTab" class="tabInactive"><a href="#" onclick="return changeTab(this);">Spatial</a></td>
+<td id="AttributesTab" class="tabInactive"><a href="#" onclick="return changeTab(this);">Attributes</a></td>
+</tr>
+</table>
+</div>
+<div id="box">
+<div id="Description">
+<h2 class="seclabel" style="display:none;">Description</h2><span class="label">Keywords</span><div class="indent">
+<div id="keywords">
+<div><span class="label">Theme:</span> (Thesaurus: None) sea otters, sea otter census, aerial counts, shore counts, distribution, range</div>
+<div><span class="label">Place:</span> (Thesaurus: None) California, Coast, Central California Coast, Southern California Coast</div>
+</div>
+</div><br><div><span class="label">Descriptive Information</span><div class="indent">
+<div id="descript">
+<div id="abstract"><a class="hideShow" onclick="return hideShow(this);" href="#">Abstract</a><div class="indent">The GIS layer "Range_extent_09" is a simple polyline representing the geographic distribution of the southern sea otter (Enhydra lutris nereis) in mainland California, based on data collected during the spring 2009 range-wide census. The USGS range-wide sea otter census has been undertaken twice a year since 1982, once in May and once in October, using consistent methodology involving both ground-based and aerial-based counts.  The spring census is considered more accurate than the fall count, and provides the primary basis for gauging population trends by State and Federal management agencies. Sea otter distribution in California (the mainland range) is considered to comprise a band of potential habitat stretching along the coast of California, and bounded to the north and south by range limits defined as "the points farthest from the range center at which 5 or more otters are counted within a 10km contiguous stretch of coastline (as measured along the 10m bathymetric contour) during the two most recent spring censuses, or at which these same criteria were met in the previous year".</div>
+</div>
+<div id="purpose"><a class="hideShow" onclick="return hideShow(this);" href="#">Purpose</a><div class="indent">The range-wide census is conducted to monitor trends in abundance of the southern sea otter, and thus provide State and Federal resource agencies with the information they need for effective management.  Because the censuses represent uncorrected total counts (rather than sample-based surveys), they cannot be considered as accurate estimates of true population abundance.  Instead, these data represent a valuable time-series of index counts, and provide the means of assessing spatial and temporal trends in relative abundance and distribution. The range extent GIS layer is useful for evaluating the range expansion of the sea otter population over time, and for identifying areas where significant sea otter impacts on near-shore marine communities are likely to occur.</div>
+</div>
+<div id="supplinf"><a class="hideShow" onclick="return hideShow(this);" href="#">Supplemental Information</a><div class="indent" style="display: none;">1. Census Methods<br>During each census, the entire mainland range of the sea otter in coastal California is counted by one of two methods: aerial surveys or shore-based counts.  The latter method is used in all areas that are accessible by ground-based observers, except in a few regions where otters often move far off shore (such as shallow, sandy embayments) and are therefore difficult to count reliably from the shore. For the majority of the sea otter's range, however, ground surveys are practical, and are considered the more reliable means of censusing.  It has been estimated that shore-based observers generally detect about 90-95% of the otters located in a given area (Estes and Jameson 1988). The ground survey area is divided into sections and each section is assigned to a team of observers. Each team consists of two individuals, a primary and secondary observer. The primary observer in every case is an individual with considerable experience counting and observing sea otters. Generally, the secondary observer has less experience than the primary, but in some cases the teams consisted of equally skilled individuals. Occasionally, small areas are counted by a single individual, but this occurs infrequently, and in every instance the individual is highly skilled with many years of experience and intimately familiar with the area to be surveyed. Each team is equipped with a high resolution 50-80X telescope and each member has binoculars (10X). <br><br>Shore-based procedures are as follows: the team starts at one end of their assigned section and selects an observation point that provides good viewing of a "viewable area of habitat", which generally consists of 100-300m of coastline and all waters out to approximately 1.5 km from shore. In most cases observers use the same counting locations year after year, for consistency. The observers scan the area with unaided eye and binoculars for otters or objects that are suspected to be sea otters. Large groups and suspicious objects are scanned by the primary observer with the aid of the telescope while the secondary observer continuously scans the area with binoculars for foraging or resting otters missed during the initial scan. After having taken sufficient time (15-30 minutes) to make a thorough count of all otters within this first area of habitat, the observers move down the coast to another location that provides good viewing of the next area of habitat, contiguous with the first area. This process is continued until the entire section is counted.<br><br>All sea otter observations are marked as points directly onto field maps (scale 1:6000) that show all major features of the area (including offshore rocks and kelp beds) for reference. These features allow data to be precisely placed on the maps, and reduce the chances of recounting or undercounting when the team moves to the next observation point. In addition to the otter locations, associated data recorded directly onto the maps include the following: number of independent otters, number and relative age of pups (pups are classed as either small or large depending primarily on the presence or absence of the natal pelage, but sometimes on relative size or behavior), behavior (resting, foraging, or "other"), group size, and micro-habitat type (open water, kelp, or hauled out).  Time and general counting conditions are also recorded. Viewing conditions are rated from excellent to poor (coded 4 to 0). Teams are instructed to not begin surveying if conditions are "poor", or to abort the survey if conditions deteriorate to "poor". Because each team is headed by an experienced observer, it is left to that individual to determine if conditions are suitable for counting.  <br><br>For those portions of the range where ground counting is impossible or impractical, aerial surveys are conducted using a Partenavia PN68 "Observer" fixed-wing plane.  The plane carries three observers and a pilot, and flies at an air speed of approximately 167 kilometers per hour (90 knots) at an altitude of approximately 60 meters (200 feet).  Pilot and data recorder/observer occupy front seats; principal observers occupy middle seats viewing out through bubble-type viewing windows.  The flight path is a predetermined track line constructed using GIS software and loaded into a GPS for the pilot to follow.  Transects are oriented parallel to the coastline, with the nearshore transect line centered approximately 300 meters from shore.  At survey section boundaries, the plane turns offshore, reverses direction and flies parallel to the first transect, continuing to follow pre-established tracklines on the pilot's GPS.  The distance moved offshore is dependent of habitat type: transects over kelp habitat are spaced 600 meters apart (300 meter viewing area to each side of the plane), while transects over open water are spaced 800 meters apart (400 meter viewing area to each side of the plane).  The survey transects are established to cover all waters within 60m of depth (30 fathoms).  In some areas, such as Pismo Beach, this includes over 10 transects spaced at 800 meters.  The survey track line and waypoints for otter sightings are recorded on a separate handheld GPS unit. Additional information on each sea otter sighting is recorded onto data sheets which are later transferred to a spreadsheet.  The data fields include group size (with adults and pups tallied separately), observer, and viewing conditions (ranked on a 1-10 scale).  <br><br>2. Data Processing<br>Census data recorded on paper survey maps are digitized directly into a GIS system using a standard digitizing tablet. All paper survey maps have 4 geo-reference calibration points marked on them to ensure spatial accuracy. A custom GIS data capture interface program was designed for this purpose (using ESRI ArcView 3.2 software and Avenue programming language) by Brian Fulfrost, Department of Environmental Studies, UC Santa Cruz. After completing the digitizing of all survey maps from the ground-based count, all spatial data collected during the aerial survey (including waypoints and associated attribute data in spreadsheet form) are imported into the program. Rigorous error checking is then conducted to ensure that the totals for each paper survey map and each aerial survey section are consistent with the data in the GIS database.  <br><br>3. Data Analysis and Summarization<br>Calculation of the sea otter's range along the mainland coast is facilitated by measuring the coast in linear units called "ATOS" points.  The ATOS (As-The-Otter-Swims) points are arbitrary locations established approximately every 500 meters along a smoothed 5 fathom bathymetric contour (line) offshore of the State of California. Each ATOS point is identified by an integer value, and these integer values increase consecutively from north to south: ATOS 0 is located at the middle of the Golden Gate Bridge, and ATOS 2024 is located at the California/Mexico border. The ATOS line that these points fall along corresponds (in principal) to the track that would be followed by a sea otter travelling parallel to the coast to the north or south, and thus is useful for measuing distances travelled by sea otters or other coastal wildlife. The current locations of living sea otters, or the stranding locations of beach-cast otter carcasses, can be easily referred to by the nearest ATOS point number (e.g. ATOS 321 indicates the mouth of Elkhorn Slough, at Moss Landing, CA).<br><br>All sea otter sighting locations are assigned the number of the nearest ATOS point, by conducting a spatial join with the Shape file "ATOS_teae_83".  The numbers of otters associated with each ATOS point are then summed. The northern and southern range limits are then identified as the ATOS points farthest from the range center (ATOS 481) at which 5 or more otters are counted within 20 contiguous ATOS units (or a 10km contiguous stretch of coastline as measured along the 10m bathymetric contour) during the two most recent spring censuses, or at which these same criteria were met in the previous year.  All ATOS points that fall between these range limits are selected, and converted into a single polyline that represents the current sea otter distribution. <br><br><br>References<br>Estes, J. A., and R. J. Jameson.  1988.  A double-survey estimate for sighting probability of sea otters in California. Journal of Wildlife Management 52(1):70-76.<br></div>
+</div>
+</div>
+</div>
+</div>
+<hr>
+<div id="status"><a class="hideShow" onclick="return hideShow(this);" href="#">Status of the data</a><div class="indent" style="display: none;"><em>Progress: </em>Complete<br><em>Update Frequency: </em>Annually</div>
+</div><br><div id="timeperd"><a class="hideShow" onclick="return hideShow(this);" href="#">Time period for which the data is relevant</a><div class="indent" style="display: none;">2009  (ground condition)</div>
+</div><br><div id="citeinfo"><a href="#" class="hideShow" onclick="return hideShow(this);">Publication Information</a><div class="indent" style="display: none;"><em>Title: </em>Range_extent_09<br><em>Originator: </em>USGS<br><em>Publication Date: </em>2009 <br><em>Format: </em>vector digital data<br><em>Online: </em>\\TIMS_DESKTOP\C$\otter_census\GIS\sp09\Range_extent_09.shp<br></div>
+</div>
+<hr>
+<div id="storage"><a href="#" class="hideShow" onclick="return hideShow(this);">Data storage and access information</a><div class="indent" style="display: none;"><em>Resource Description: </em>Downloadable Data<br><div id="stdorder"><a href="#" class="hideShow" onclick="return hideShow(this);">Accessing the data</a><div class="indent" style="display: none;"><em>Data Transfer Size: </em>0.017<br><br></div>
+</div>
+<div id="constraints"><a href="#" class="hideShow" onclick="return hideShow(this);">Constraints on accessing and using the data</a><div class="indent" style="display: none;"><em>Access Constraints:</em><div class="indent">None</div><em>Use Constraints:</em><div class="indent">None</div>
+</div>
+</div>
+</div>
+</div><br><div id="ptcontac"><a href="#" class="hideShow" onclick="return hideShow(this);">Point of Contact</a><div class="indent" style="display: none;"><em>Address: </em>mailing and physical address<div class="indent">COH Bldg., Long Marine Lab<br>100 Shaffer Road<br>Santa Cruz, Ca 95060<br></div><em>Primary Person: </em><div class="indent"><em>Person: </em>M. Tim Tinker<br><em>Organization: </em>USGS<br></div><em>Position: </em>Research Wildlife Biologist<br><em>Telephone: </em>831-459-2357<br><em>FAX: </em>831-459-2249<br><em>E-mail: </em>ttinker@usgs.gov<br><em>Hours of Service: </em>8-5<br></div>
+</div><br><div id="docdetails"><a href="#" class="hideShow" onclick="return hideShow(this);">Details about this Document</a><div class="indent" style="display: none;">Contents last updated: 20090618<br><div id="metc"><a href="#" class="hideShow" onclick="return hideShow(this);">Who completed this document</a><div class="indent" style="display: none"><em>Primary Organization: </em><div class="indent"><em>Person: </em>William Perry<br><em>Organization: </em>USGS<br></div><em>Address: </em>mailing and physical address<div class="indent">6924 Tremont Road<br>Dixon, Ca 95620<br></div><em>Telephone: </em>707-678-0682 ext. 619<br><em>Position: </em>IT/GIS Specialist<br><em>FAX: </em>707-678-5039<br></div>
+</div><br><div id="metstd"><a href="#" class="hideShow" onclick="return hideShow(this);">Standards used to create this document</a><div class="indent" style="display: none"><em>Standard Name: </em>FGDC Content Standards for Digital Geospatial Metadata<br><em>Standard Version: </em>FGDC-STD-001-1998<br><em>Time Convention Used in this Document: </em>local time<br></div>
+</div>
+</div>
+</div>
+</div>
+<div id="Spatial">
+<h2 class="seclabel" style="display:none;">Spatial Information</h2>
+<div id="horizsys"><span class="label">Horizontal coordinate system</span><div id="hsysdetails" class="indent"><a href="#" class="hideShow" onclick="return hideShow(this);">
+	  Details
+	</a><div class="indent" style="display: none;"><span class="label">Map projection name: </span>Albers Conical Equal Area<div class="indent"><em>Standard Parallel: </em>34.000000<br><em>Standard Parallel: </em>40.500000<br><em>Longitude of Central Meridian: </em>-120.000000<br><em>Latitude of Projection Origin: </em>0.000000<br><em>False Easting: </em>0.000000<br><em>False Northing: </em>-4000000.000000<br><br></div><span class="label">Planar coordinate information:</span><div class="indent"><em>Planar Coordinate Encoding Method: </em>coordinate pair<br><em>Abscissa Resolution: </em>0.000001<br><em>Ordinate Resolution: </em>0.000001<br><em>Planar Distance Units: </em>meters<br><br></div><span class="label">Geodetic Model</span><div class="indent"><em>Horizontal Datum Name: </em>North American Datum of 1983<br><em>Ellipsoid Name: </em>Geodetic Reference System 80<br><em>Semi-major Axis: </em>6378137.000000<br><em>Denominator of Flattening: </em>298.257222<br></div><br></div>
+</div><br></div>
+<hr>
+<div id="spdom"><span class="label">Bounding Coordinates</span><div class="indent"><span class="label">Horizontal</span><div class="indent">
+<div id="bounding"><span class="label">In decimal degrees</span><div class="indent">
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td align="right">West:</td>
+<td>&#160;</td>
+<td align="right">-122.428611</td>
+</tr>
+<tr>
+<td align="right">East:</td>
+<td>&#160;</td>
+<td align="right">-119.864082</td>
+</tr>
+<tr>
+<td align="right">North:</td>
+<td>&#160;</td>
+<td align="right">37.409673</td>
+</tr>
+<tr>
+<td align="right">South:</td>
+<td>&#160;</td>
+<td align="right">34.380832</td>
+</tr>
+</table>
+</div>
+</div>
+</div><br></div>
+</div>
+<hr>
+<div id="spdoinfo"><span class="label">Spatial data description</span><div class="indent"><span class="label">Vector data information</span><div class="indent">
+<div id="sdtsterms"><a href="#" class="hideShow" onclick="return hideShow(this);"><acronym title="Spatial Data Transfer Standard">SDTS</acronym>
+	    description
+	  </a><div class="indent" style="display: none"><em>Type: </em>String<br><em>Count: </em>1<br><br></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="Attributes">
+<h2 class="seclabel" style="display:none;">Entity and Attribute Information</h2>
+<div id="detailed"><a href="#" class="hideShow" onclick="return hideShow(this);">Details</a><div class="indent"><span class="label">Entity Type</span><div class="indent"><em>Label: </em>Range_extent_09<br></div><br><span class="label">Attributes</span><div class="indent">
+<div id="IDA30Q2M"><a href="#" class="hideShow" onclick="return hideShow(this);">FID</a><div class="indent" style="display: none;"><em>Label: </em>FID<br><em>Definition: </em><div class="indent">Internal feature number.</div><em>Definition Source: </em><div class="indent">ESRI</div><em>Unrepresentable Domain:</em><div class="indent">Sequential unique whole numbers that are automatically generated.</div>
+</div>
+</div>
+<div id="IDAX0Q2M"><a href="#" class="hideShow" onclick="return hideShow(this);">Id</a><div class="indent" style="display: none;"><em>Label: </em>Id<br></div>
+</div>
+<div id="IDAG1Q2M"><a href="#" class="hideShow" onclick="return hideShow(this);">Shape</a><div class="indent" style="display: none;"><em>Label: </em>Shape<br><em>Definition: </em><div class="indent">Feature geometry.</div><em>Definition Source: </em><div class="indent">ESRI</div><em>Unrepresentable Domain:</em><div class="indent">Coordinates defining the features.</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

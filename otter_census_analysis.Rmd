@@ -1,0 +1,253 @@
+---
+title: "otter_census_analysis"
+author: "Owen Liu"
+date: "March 14, 2016"
+output: html_document
+---
+
+```{r setup, echo = FALSE, message = FALSE}
+library(plyr)
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(maptools)
+library(ggplot2)
+library(sp)
+library(rgeos)
+library(broom)
+library(reshape)
+library(reshape2)
+```
+
+
+Starting with the 1985-1994 census data
+```{r read shapefiles 1, echo = TRUE, eval = TRUE}
+library(rgdal)
+dir_spatial   <- '~/github/sea_otter_census/data/seaottercensusdata1985_1994/sp85' 
+layer_85 <- 'Census_sum_85'
+
+poly_census_85 <- readOGR(dsn = path.expand(dir_spatial), layer = layer_85, stringsAsFactors = FALSE)
+
+# poly_census_85.tidy <- tidy(poly_census_85,region='POLY_ID')
+# ggplot(poly_census_85.tidy, aes(long,lat)) +geom_polygon()
+```
+
+
+```{r viewing SpatialPolygonsDataFrame slots, echo = TRUE, eval = TRUE}
+### view the overall structure
+summary(poly_census_85)
+
+### check out the attribute table in the data slot
+head(poly_census_85@data)
+
+### check out the CRS info
+poly_census_85@proj4string
+```
+
+Plot ATOS by Density
+```{r density by latitude, echo=TRUE, eval=TRUE}
+## Data is stored in the @data slot of the SpatilPolygonsDataFrame
+atts_85<-poly_census_85@data
+names(atts_85)
+dens_85<-ggplot(atts_85,aes(x=ATOS_ID,y=lin_dens)) + geom_smooth() +xlab('Census section (North to South)') +ylab('Density per km coastline') +ggtitle('Otter Density by Latitude')
+dens_85
+```
+
+Import all the other years and see if we can do the same analyses
+```{r importing all shapefiles, echo=FALSE}
+
+### for 1985 to 1994
+
+atts_all <- list()
+
+for(i in 85:94) {
+  dir_spatial  <- paste0('~/github/sea_otter_census/data/seaottercensusdata1985_1994/sp',i)
+  layer <- paste0('Census_sum_',i)
+
+  poly_yr <- readOGR(dsn = path.expand(dir_spatial), layer = layer, stringsAsFactors = FALSE)
+  poly_name <- paste0('poly_census_',i)
+  assign(poly_name,poly_yr)
+  
+  atts<-poly_yr@data
+  atts_name <- paste0('atts_',19,i)
+  plot_name <- paste0('dens_',19,i)
+  dens_plot<-ggplot(atts,aes(x=ATOS_ID,y=lin_dens)) + geom_smooth() +xlab('Census section (North to South)') +ylab('Density per km coastline') +ggtitle(paste0('Otter Density by Latitude, Year: ',i)) +ylim(c(0,5))
+  assign(plot_name,dens_plot)
+  assign(atts_name,atts)
+  atts_all[[atts_name]] <- atts
+}
+
+
+### for 1995 to 2004
+for(i in 95:99) {
+  dir_spatial  <- paste0('~/github/sea_otter_census/data/seaottercensusdata1995_2004/sp',i)
+  layer <- paste0('Census_sum_',i)
+
+  poly_yr <- readOGR(dsn = path.expand(dir_spatial), layer = layer, stringsAsFactors = FALSE)
+  poly_name <- paste0('poly_census_',i)
+  assign(poly_name,poly_yr)
+  
+  atts<-poly_yr@data
+  atts_name <- paste0('atts_',19,i)
+  plot_name <- paste0('dens_',19,i)
+  dens_plot<-ggplot(atts,aes(x=ATOS_ID,y=lin_dens)) + geom_smooth() +xlab('Census section (North to South)') +ylab('Density per km coastline') +ggtitle(paste0('Otter Density by Latitude, Year: ',i)) +ylim(c(0,5))
+  assign(plot_name,dens_plot)
+  assign(atts_name,atts)
+  atts_all[[atts_name]] <- atts
+}
+
+### for 2000 to 2004
+for(i in c('00','01','02','03','04')) {
+  dir_spatial  <- paste0('~/github/sea_otter_census/data/seaottercensusdata1995_2004/sp',i)
+  layer <- paste0('Census_sum_',i)
+
+  poly_yr <- readOGR(dsn = path.expand(dir_spatial), layer = layer, stringsAsFactors = FALSE)
+  poly_name <- paste0('poly_census_',i)
+  assign(poly_name,poly_yr)
+  
+  atts<-poly_yr@data
+  atts_name <- paste0('atts_',20,i)
+  plot_name <- paste0('dens_',20,i)
+  dens_plot<-ggplot(atts,aes(x=ATOS_ID,y=lin_dens)) + geom_smooth() +xlab('Census section (North to South)') +ylab('Density per km coastline') +ggtitle(paste0('Otter Density by Latitude, Year: ',i)) +ylim(c(0,5))
+  assign(plot_name,dens_plot)
+  assign(atts_name,atts)
+  atts_all[[atts_name]] <- atts
+}
+
+### for 2005 to 2014
+for(i in c('05','06','07','08','09',10,12,13,14)) {
+  dir_spatial  <- paste0('~/github/sea_otter_census/data/seaottercensusdata2005_2014/sp',i)
+  layer <- paste0('Census_sum_',i)
+
+  poly_yr <- readOGR(dsn = path.expand(dir_spatial), layer = layer, stringsAsFactors = FALSE)
+  poly_name <- paste0('poly_census_',i)
+  assign(poly_name,poly_yr)
+  
+  atts<-poly_yr@data
+  atts_name <- paste0('atts_',20,i)
+  plot_name <- paste0('dens_',20,i)
+  dens_plot<-ggplot(atts,aes(x=ATOS_ID,y=lin_dens)) + geom_smooth() +xlab('Census section (North to South)') +ylab('Density per km coastline') +ggtitle(paste0('Otter Density by Latitude, Year: ',i)) +ylim(c(0,5))
+  assign(plot_name,dens_plot)
+  assign(atts_name,atts)
+  atts_all[[atts_name]] <- atts
+}
+```
+
+Range extent over time
+
+```{r range extent, echo=TRUE,eval=TRUE}
+calc_range <- function(x) c((range(x$ATOS_ID)), (max(x$ATOS_ID)-min(x$ATOS_ID))/2)
+ranges <- t(sapply(atts_all,calc_range))
+range.out <- data.frame(year=c(1985:2010,2012:2014),min=ranges[,1],max=ranges[,2],range=ranges[,3])
+
+range_plot<-ggplot(range.out) + geom_line(aes(x=year,y=range)) + xlab('Year')+ylab('Range Extent, km of coastline') +ggtitle('Total Range Extent by Year, 1985-2014')
+
+northern_edge <- ggplot(range.out) + geom_path(aes(x=year,y=min)) + xlab('Year')+ylab('Northern Range Limit (most northerly ATOS point') +ggtitle('Northern Extent of Range by Year, 1985-2014') + scale_y_reverse()
+
+southern_edge <- ggplot(range.out) + geom_path(aes(x=year,y=max)) + xlab('Year')+ylab('Southern Range Limit (most southerly ATOS point)') +ggtitle('Southern Extent of Range by Year, 1985-2014')
+
+range_plot
+northern_edge
+southern_edge
+# note: no data for 2011 because of weather, so range is average of 2013 and 2014
+
+```
+
+
+We are interested partly in how otter density has changed with marine protected area implementation.  We have a dataset for California MPAs, let's add it.
+
+```{r California MPAs, echo=TRUE, eval=TRUE}
+dir_spatial  <- paste0('~/github/sea_otter_census/data/MPA_CA_Existing_160301')
+layer <- 'MPA_CA_Existing_160301'
+cal_mpas <- readOGR(dsn = path.expand(dir_spatial), layer = layer, stringsAsFactors = FALSE)
+cal_mpas.data <- cal_mpas@data
+
+plot(cal_mpas)
+# luckily, this layer has the same Proj4String as the otter data, so we don't have to worry as much about spatial congruence of the layers
+
+### view the overall structure
+summary(cal_mpas)
+
+### check out the attribute table in the data slot
+head(cal_mpas@data)
+
+### spatial overlap between an otter layer and the marine reserves
+### over() function returns, in a list, all the elements of the otter census that touch or overlap any of the mpas, then we extract only the overlapping IDs and use the unique overlapping POLY_IDs as our index of otter census tracts that are associated with marine reserves.
+
+## list of all MPAs and which census tracts overlap with them
+otter_mpa_over <- over(cal_mpas,poly_census_09,returnList = T)
+## assign the MPA ID #s to the overlay list so we can properly reference them later
+names(otter_mpa_over)<-cal_mpas@data$OBJECTID
+
+## just a list of the overlaps
+overlaps <- otter_mpa_over[sapply(otter_mpa_over, function(x) dim(x)[1]) > 0]
+
+## subset (IDs) of MPAs that are within the otter range
+over_mpas <- cal_mpas[sapply(otter_mpa_over, function(x) dim(x)[1]>0),]
+
+## census polygon IDs that fall within overlapping MPAs
+over_polyIDs<- sapply(overlaps,function(x) unique(x$POLY_ID))
+#and as a simple vector
+polyIDs.vec <-unlist(over_polyIDs)
+
+#visual check-- census polygons that fall within or touch MPAs
+census_inside <- poly_census_09[which(poly_census_09@data$POLY_ID %in% polyIDs.vec),]
+plot(census_inside)
+
+#visual check-- census polygons that DO NOT fall within or touch MPAs
+census_outside <- poly_census_09[which(!poly_census_09@data$POLY_ID %in% polyIDs.vec),]
+plot(census_outside)
+
+
+```
+
+So now we have our list of unique IDs.  Because we used the year of census data with the largest spatial extent (largest otter range, 2009), we should be able to apply those IDs too all of the years of data, and obtain densities for inside/outside MPAs for each year of census data.  We'll first write a function to do that for a given census year, then apply it to all years.  Of course, to do this we will also need the inverse selection, i.e. those census tracts outside the MPAs.
+
+```{r census subset, echo=TRUE,eval=TRUE}
+
+# combine all of the attribute data
+#keeper columns
+keeps <- c('POLY_ID','lin_dens',"Year")
+dens.all.years <- ldply(atts_all,function(x) x[keeps],.id=NULL)
+dens.all.years$in_out <- apply(dens.all.years,MARGIN=1,function(x) ifelse(x["POLY_ID"] %in% polyIDs.vec, 'Inside',"Outside"))
+
+# mean density by year
+mpa.dens.by.yr <- aggregate(list(mean_dens=dens.all.years$lin_dens),by=list(Year=dens.all.years$Year,Reserve=dens.all.years$in_out),FUN=mean)
+
+
+# standard deviation
+mpa.dens.sd.by.yr <- aggregate(list(sd_dens=dens.all.years$lin_dens),by=list(Year=dens.all.years$Year,Reserve=dens.all.years$in_out),FUN=sd)
+mpa.dens.by.yr <-merge(mpa.dens.by.yr,mpa.dens.sd.by.yr)
+
+inside.by.yr <- subset(mpa.dens.by.yr,mpa.dens.by.yr$Reserve=='Inside')
+outside.by.yr <- subset(mpa.dens.by.yr,mpa.dens.by.yr$Reserve=='Outside')
+
+# time series plots of mean density inside and outside over time
+ggplot(inside.by.yr,aes(x=Year,y=mean_dens)) + geom_line() + geom_line(data=outside.by.yr, col='blue')
+
+# box plot of all density data inside/outside
+ggplot(mpa.dens.by.yr,aes(x=Reserve,y=mean_dens)) + geom_boxplot()
+
+
+### BACI
+## Assumption is that marine reserves went into effect in 2007 (true for most central coast MPAs)
+before <- subset(dens.all.years,dens.all.years$Year<=2007)
+after <- subset(dens.all.years,dens.all.years$Year>2007)
+
+dens.all.years$bef_aft <- apply(dens.all.years,MARGIN=1,function(x) ifelse(x["Year"] < 2008, 'Before',"After"))
+
+bef.aft.in.out <- aggregate(list(mean_dens=dens.all.years$lin_dens),by=list(Reserve=dens.all.years$in_out, Period=dens.all.years$bef_aft),FUN=mean)
+
+
+ggplot(bef.aft.in.out,aes(y=mean_dens,color=Reserve,group=Reserve)) + geom_line(aes(x=Period)) +ylab('Mean Density')
+
+```
+
+Specific to each MPA
+
+```{r buffer and clip mpas, echo=TRUE, eval=TRUE}
+
+#first we need to create a buffer for the MPAs, that approximates the home range size of an otter
+buffer_mpas <- function(mpa_layer, bufferdist) {
+  #inputs: spatial layer of mpas, buffer distance defined as furthest one-dimensional distance (km) within which an otter would still be considered "associated" or potentially benefitting from the MPA. Somewhat analagous to home range
+})
