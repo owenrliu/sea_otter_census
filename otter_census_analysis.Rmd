@@ -9,6 +9,7 @@ output: html_document
 library(plyr)
 library(dplyr)
 library(tidyr)
+library(rgdal)
 library(stringr)
 library(maptools)
 library(ggplot2)
@@ -22,7 +23,6 @@ library(reshape2)
 
 Starting with the 1985-1994 census data
 ```{r read shapefiles 1, echo = TRUE, eval = TRUE}
-library(rgdal)
 dir_spatial   <- '~/github/sea_otter_census/data/seaottercensusdata1985_1994/sp85' 
 layer_85 <- 'Census_sum_85'
 
@@ -225,7 +225,7 @@ outside.by.yr <- subset(mpa.dens.by.yr,mpa.dens.by.yr$Reserve=='Outside')
 # time series plots of mean density inside and outside over time
 ggplot(inside.by.yr,aes(x=Year,y=mean_dens)) + geom_line() + geom_line(data=outside.by.yr, col='blue')
 
-# box plot of all density data inside/outside
+# box plot of all density data inside/outsideR
 ggplot(mpa.dens.by.yr,aes(x=Reserve,y=mean_dens)) + geom_boxplot()
 
 
@@ -233,6 +233,7 @@ ggplot(mpa.dens.by.yr,aes(x=Reserve,y=mean_dens)) + geom_boxplot()
 ## Assumption is that marine reserves went into effect in 2007 (true for most central coast MPAs)
 before <- subset(dens.all.years,dens.all.years$Year<=2007)
 after <- subset(dens.all.years,dens.all.years$Year>2007)
+
 
 dens.all.years$bef_aft <- apply(dens.all.years,MARGIN=1,function(x) ifelse(x["Year"] < 2008, 'Before',"After"))
 
@@ -247,7 +248,17 @@ Specific to each MPA
 
 ```{r buffer and clip mpas, echo=TRUE, eval=TRUE}
 
+#state layer for clipping to coast
+dir_spatial  <- paste0('~/github/sea_otter_census/data/cnty24k09_1_shp/shapefiles')
+layer <- 'cnty24k09_1_state_poly'
+cal_land <- readOGR(dsn = path.expand(dir_spatial), layer = layer, stringsAsFactors = FALSE)
+
 #first we need to create a buffer for the MPAs, that approximates the home range size of an otter
-buffer_mpas <- function(mpa_layer, bufferdist) {
-  #inputs: spatial layer of mpas, buffer distance defined as furthest one-dimensional distance (km) within which an otter would still be considered "associated" or potentially benefitting from the MPA. Somewhat analagous to home range
-})
+buffer_mpas <- function(mpa_layer=cal_mpas, bufferdist=5) {
+    #inputs: spatial layer of mpas, buffer distance defined as furthest one-dimensional distance (km) within which an otter would still be considered "associated" or potentially benefitting from the MPA. Somewhat analagous to home range
+  buff_lyr <- gBuffer(mpa_layer,width=bufferdist*1000,byid=TRUE)
+  buff_clip <- gDifference(buff_lyr, cal_land,byid=TRUE)
+  ids <- sapply(names(buff_clip),function(x) strsplit(x, " ")[[1]][1])
+  plot(buff_clip)
+  return(buff_clip)
+}
