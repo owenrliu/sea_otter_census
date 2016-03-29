@@ -205,7 +205,6 @@ So now we have our list of unique IDs.  Because we used the year of census data 
 
 ```{r census subset, echo=TRUE,eval=TRUE}
 
-# combine all of the attribute data
 #keeper columns
 keeps <- c('POLY_ID','lin_dens',"Year")
 dens.all.years <- ldply(atts_all,function(x) x[keeps],.id=NULL)
@@ -223,7 +222,7 @@ inside.by.yr <- subset(mpa.dens.by.yr,mpa.dens.by.yr$Reserve=='Inside')
 outside.by.yr <- subset(mpa.dens.by.yr,mpa.dens.by.yr$Reserve=='Outside')
 
 # time series plots of mean density inside and outside over time
-ggplot(inside.by.yr,aes(x=Year,y=mean_dens)) + geom_line() + geom_line(data=outside.by.yr, col='blue')
+ggplot(mpa.dens.by.yr,aes(x=Year,y=mean_dens,col=Reserve,group=Reserve)) + geom_line() +ylab('Otters/km of coastline') + scale_colour_manual("",labels = c("Inside MPAs", "Outside MPAs"),values = c("black", "blue")) +ggtitle('Otter Density Inside and Outside of MPAs')
 
 # box plot of all density data inside/outsideR
 ggplot(mpa.dens.by.yr,aes(x=Reserve,y=mean_dens)) + geom_boxplot()
@@ -239,8 +238,38 @@ dens.all.years$bef_aft <- apply(dens.all.years,MARGIN=1,function(x) ifelse(x["Ye
 
 bef.aft.in.out <- aggregate(list(mean_dens=dens.all.years$lin_dens),by=list(Reserve=dens.all.years$in_out, Period=dens.all.years$bef_aft),FUN=mean)
 
+bef.aft.in.out$plotorder <- sapply(bef.aft.in.out$Period,function(x) ifelse(x=='Before','1','2'))
 
-ggplot(bef.aft.in.out,aes(y=mean_dens,color=Reserve,group=Reserve)) + geom_line(aes(x=Period)) +ylab('Mean Density')
+
+ggplot(bef.aft.in.out,aes(y=mean_dens,color=Reserve,group=Reserve)) + geom_line(aes(x=plotorder)) +ylab('Mean Density') +xlab('Period') +scale_x_discrete(labels=c('Before','After')) +scale_color_manual(values=c('seagreen','royalblue'))
+
+## another column for just the poly number (without the character) for the next step
+dens.all.years$polynum <- as.numeric(sapply(dens.all.years$POLY_ID,function(x) gsub("[[:alpha:]]","",x)))
+
+```
+
+Just a subset of MPAs (in this case, just the central coast)
+
+```{r subset over time}
+plot_density_subset <- function(poly_subset=c(400,800)) {
+  dat.subset <- dens.all.years[dens.all.years$polynum >= poly_subset[1] & dens.all.years$polynum <=poly_subset[2],]
+  dens.by.yr <- aggregate(list(mean_dens=dat.subset$lin_dens),by=list(Year=dat.subset$Year,Reserve=dat.subset$in_out),FUN=mean)
+  # time series plots of mean density inside and outside over time
+  dens.over.time <- ggplot(dens.by.yr,aes(x=Year,y=mean_dens,col=Reserve,group=Reserve)) + geom_line() +ylab('Otters/km of coastline') +   scale_colour_manual("",labels = c("Inside MPAs", "Outside MPAs"),values = c("black", "blue")) +ggtitle('Otter Density Inside and Outside of MPAs')
+  
+  # box plot of all density data inside/outside
+  dens.boxplot<-ggplot(dens.by.yr,aes(x=Reserve,y=mean_dens)) + geom_boxplot()
+  
+  
+  ### BACI
+  bef.aft.in.out <- aggregate(list(mean_dens=dat.subset$lin_dens),by=list(Reserve=dat.subset$in_out, Period=dat.subset$bef_aft),FUN=mean)
+  
+  bef.aft.in.out$plotorder <- sapply(bef.aft.in.out$Period,function(x) ifelse(x=='Before','1','2'))
+  
+  baci.plot<-ggplot(bef.aft.in.out,aes(y=mean_dens,color=Reserve,group=Reserve)) + geom_line(aes(x=plotorder)) +ylab('Mean Density') +xlab('Period') +scale_x_discrete(labels=c('Before','After'))+scale_color_manual(values=c('seagreen','royalblue'))
+  
+  return(list(dens_over_time=dens.over.time,box=dens.boxplot,baci=baci.plot))
+}
 
 ```
 
@@ -256,9 +285,25 @@ cal_land <- readOGR(dsn = path.expand(dir_spatial), layer = layer, stringsAsFact
 #first we need to create a buffer for the MPAs, that approximates the home range size of an otter
 buffer_mpas <- function(mpa_layer=cal_mpas, bufferdist=5) {
     #inputs: spatial layer of mpas, buffer distance defined as furthest one-dimensional distance (km) within which an otter would still be considered "associated" or potentially benefitting from the MPA. Somewhat analagous to home range
+  
+  # spatially buffer the mpa_layer by the given buffer distance, including all records (byid=T)
   buff_lyr <- gBuffer(mpa_layer,width=bufferdist*1000,byid=TRUE)
+  
+  #clip the buffered layer by the California coastline (so we don't include land area)
   buff_clip <- gDifference(buff_lyr, cal_land,byid=TRUE)
-  ids <- sapply(names(buff_clip),function(x) strsplit(x, " ")[[1]][1])
-  plot(buff_clip)
-  return(buff_clip)
+  
+  # because the clipped layer loses its attributes, we need to pull out the applicable attributes from the original mpa layer and attach them to the new, clipped layer. We do this by matching row names between the mpa layer and the clip layer
+  ids<-sapply(row.names(buff_clip),function(x) strsplit(x, " ")[[1]][1])
+  row.names(buff_clip) <- ids
+  i<-match(ids,row.names(mpa_layer))
+  
+  #pull out the appropriate atributes from the original layer...
+  attributes <- cal_mpas@data[i,]
+  # ...and apply them to our final output
+  out.spdf <- SpatialPolygonsDataFrame(buff_clip,attributes)
+  plot(out.spdf)
+  return(out.spdf)
 }
+```
+
+So 
