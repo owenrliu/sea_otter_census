@@ -69,7 +69,7 @@ ggplot(pop_growth2,aes(y=mean_r,x=lat,ymin=mean_r-sd_r,ymax=mean_r+sd_r)) +
 
 ## What about for all census dat?
 popgrowth3 <- census_dat %>%
-  ungroup()%>%
+  ungroup() %>%
   group_by(POLY_ID,Year) %>%
   #lag year and density by 1...
   mutate(N_1=lag(lin_dens),Y_1=lag(Year)) %>%
@@ -77,3 +77,7 @@ popgrowth3 <- census_dat %>%
   mutate(dnNdt=(lin_dens-N_1)/(lin_dens*(Year-Y_1))) %>%
   summarise(mean_r=mean(dnNdt,na.rm=T),sd_r=sd(dnNdt,na.rm=T)) %>%
   ungroup()
+
+## Export the two datasets
+write.csv(census_dat,file="data/otter_census_w_PISCO.csv",row.names = F)
+write.csv(site_pop,file="data/PISCO_sites_otter_pop.csv",row.names=F)
